@@ -9,6 +9,18 @@ import getPrismicClient from '../../services/prismic';
 
 import styles from './styles.module.scss';
 
+type Content = {
+  text: string;
+  type: string;
+}
+
+type PostData = {
+  slug: string;
+  title: string;
+  content: Content[];
+  updatedAt: string;
+}
+
 type Post = {
   slug: string;
   title: string;
@@ -48,7 +60,7 @@ export default function Posts({ posts }: PostProps) {
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient();
 
-  const response = await prismic.query([
+  const response = await prismic.query<PostData>([
     Prismic.predicates.at('document.type', 'publication')
   ], {
     fetch: ['publication.title', 'publication.content'],
@@ -67,8 +79,6 @@ export const getStaticProps: GetStaticProps = async () => {
       })
     }
   });
-
-  console.log(posts)
 
   return {
     props: {
